@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Clipboard Selector</title>
+  </head>
+  <body>
+    <button onclick="logClipboard()">Log</button>
+    <script>
+      const {ipcRenderer} = require('electron');
+
+      function getClipboardHistory() {
+          return ipcRenderer.sendSync('get-clipboard-history');
+      }
+
+      function logClipboard() {
+          console.log(getClipboardHistory());
+      }
+    </script>
+  </body>
+</html>
