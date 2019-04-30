@@ -9,6 +9,8 @@ function launchSelectorWindow() {
   selectorWindow = new BrowserWindow({
     width: 600,
     height: 600,
+    transparent: true,
+    frame: false,
     webPreferences: {
       nodeIntegration: true,
     },
@@ -22,13 +24,7 @@ function launchSelectorWindow() {
 }
 
 function init () {
-  manager = ClipboardManager.create((result) => {
-    tray.displayBalloon({
-      title: 'You Copied...',
-      content: `${result}`,
-    });
-  });
-
+  manager = ClipboardManager.create();
 
   tray = new Tray('./app.ico');
   tray.setToolTip('Clipboard Manager');

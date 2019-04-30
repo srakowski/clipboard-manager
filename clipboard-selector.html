@@ -3,19 +3,70 @@
   <head>
     <meta charset="UTF-8">
     <title>Clipboard Selector</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/vue-slicksort@latest/dist/vue-slicksort.min.js"></script>
+    <style>
+
+      #clipboard-list {
+        background-color: #efefef,
+      }
+
+      .list-item {
+        border: 1px solid gray;
+        margin: 6px;
+        padding: 12px;
+        user-select: none;
+      }
+
+    </style>
   </head>
   <body>
-    <button onclick="logClipboard()">Log</button>
+    <div id="clipboard-list">
+      <table>
+        <clipboard-history v-model="items">
+          <clipboard-history-entry
+            v-for="(item, index) in items" :index="index" :key="index" :item="item"
+          ></clipboard-history-entry>
+        </clipboard-history>
+      </table>
+    </div>
     <script>
+
       const {ipcRenderer} = require('electron');
+      const {ContainerMixin, ElementMixin} = window.VueSlicksort;
 
       function getClipboardHistory() {
           return ipcRenderer.sendSync('get-clipboard-history');
       }
 
-      function logClipboard() {
-          console.log(getClipboardHistory());
-      }
+      const ClipboardHistory = {
+        mixins: [ContainerMixin],
+        template: `
+          <div class="list">
+            <slot />
+          </div>
+        `
+      };
+
+      const ClipboardHistoryEntry = {
+        mixins: [ElementMixin],
+        props: ['item'],
+        template: `
+          <div class="list-item">{{item}}</div>
+        `
+      };
+
+      let app = new Vue({
+        el: '#clipboard-list',
+        data: {
+          items: getClipboardHistory(),
+        },
+        components: {
+          ClipboardHistory,
+          ClipboardHistoryEntry,
+        },
+      });
+
     </script>
   </body>
 </html>
