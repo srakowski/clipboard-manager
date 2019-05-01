@@ -20,7 +20,7 @@ let processing = false;
 
 function lastData() {
   return clipboardHistory.length > 0
-    ? clipboardHistory[clipboardHistory.length - 1]
+    ? clipboardHistory[0]
     : null;
 }
 
@@ -31,7 +31,7 @@ function getHistory() {
 module.exports.create = function createClipboardManager(onCopy, onError) {
   const initialData = clipboard.readText();
   if (initialData) {
-    clipboardHistory.push(initialData);
+    clipboardHistory.unshift(initialData);
     writeHistoryToFile();
   }
 
@@ -41,7 +41,7 @@ module.exports.create = function createClipboardManager(onCopy, onError) {
     try {
       const currentData = clipboard.readText();
       if (currentData && currentData !== lastData()) {
-        clipboardHistory.push(currentData);
+        clipboardHistory.unshift(currentData);
         writeHistoryToFile();
         onCopy && onCopy(currentData);
       }

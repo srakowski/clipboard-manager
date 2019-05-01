@@ -58,6 +58,15 @@ ipcMain.on('get-clipboard-history', (event, arg) => {
   event.returnValue = manager.getHistory();
 });
 
+ipcMain.on('value-written-to-clipboard', (event, arg) => {
+  selectorWindow.close();
+  selectorWindow = null;
+  tray.displayBalloon({
+    title: 'Copied!',
+    content: 'Your text is ready to paste.',
+  });
+});
+
 app.on('ready', init)
 
 app.on('window-all-closed', () => {});

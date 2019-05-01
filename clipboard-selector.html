@@ -6,24 +6,20 @@
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="https://unpkg.com/vue-slicksort@latest/dist/vue-slicksort.min.js"></script>
     <style>
-
-      #clipboard-list {
-        background-color: #efefef,
-      }
-
       .list-item {
+        cursor: pointer;
+        background-color: whitesmoke;
         border: 1px solid gray;
         margin: 6px;
         padding: 12px;
         user-select: none;
       }
-
     </style>
   </head>
-  <body>
+  <body style="background: rgba(255, 255, 255, 0.8);">
     <div id="clipboard-list">
       <table>
-        <clipboard-history v-model="items">
+        <clipboard-history v-model="items" :useDragHandle="true">
           <clipboard-history-entry
             v-for="(item, index) in items" :index="index" :key="index" :item="item"
           ></clipboard-history-entry>
@@ -32,15 +28,14 @@
     </div>
     <script>
 
-      const {ipcRenderer} = require('electron');
-      const {ContainerMixin, ElementMixin} = window.VueSlicksort;
+      const {ipcRenderer, clipboard} = require('electron');
+      const {ContainerMixin, ElementMixin, HandleDirective} = window.VueSlicksort;
 
       function getClipboardHistory() {
           return ipcRenderer.sendSync('get-clipboard-history');
       }
 
       const ClipboardHistory = {
-        mixins: [ContainerMixin],
         template: `
           <div class="list">
             <slot />
@@ -49,11 +44,19 @@
       };
 
       const ClipboardHistoryEntry = {
-        mixins: [ElementMixin],
         props: ['item'],
         template: `
-          <div class="list-item">{{item}}</div>
-        `
+          <div class="list-item" @click="writeToClipboard(item)">
+            <span v-handle class="handle"></span>
+            {{item}}
+          </div>
+        `,
+        methods: {
+          writeToClipboard(item) {
+            clipboard.writeText(item);
+            ipcRenderer.send('value-written-to-clipboard');
+          },
+        },
       };
 
       let app = new Vue({
