@@ -28,7 +28,7 @@ function getHistory() {
   return clipboardHistory;
 }
 
-module.exports.create = function createClipboardManager(onCopy, onError) {
+module.exports.create = function createClipboardManager(onChange, onError) {
   const initialData = clipboard.readText();
   if (initialData) {
     clipboardHistory.unshift(initialData);
@@ -43,7 +43,7 @@ module.exports.create = function createClipboardManager(onCopy, onError) {
       if (currentData && currentData !== lastData()) {
         clipboardHistory.unshift(currentData);
         writeHistoryToFile();
-        onCopy && onCopy(currentData);
+        onChange && onChange(currentData);
       }
     } catch (error) {
       onError && onError(error);

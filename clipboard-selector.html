@@ -40,7 +40,7 @@
           <div class="list">
             <slot />
           </div>
-        `
+        `,
       };
 
       const ClipboardHistoryEntry = {
@@ -68,6 +68,11 @@
           ClipboardHistory,
           ClipboardHistoryEntry,
         },
+        created() {
+          ipcRenderer.on('update', () => {
+            this.items = getClipboardHistory();
+          });
+        }
       });
 
     </script>

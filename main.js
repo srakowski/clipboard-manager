@@ -1,5 +1,6 @@
 const {app, Tray, Menu, BrowserWindow, ipcMain, globalShortcut} = require('electron')
 const ClipboardManager = require('./clipboard-manager.js');
+const path = require('path');
 
 let tray = null;
 let selectorWindow =  null;
@@ -24,9 +25,16 @@ function launchSelectorWindow() {
 }
 
 function init () {
-  manager = ClipboardManager.create();
+  manager = ClipboardManager.create(() => {
+    selectorWindow && selectorWindow.webContents.send('update');
+  });
 
-  tray = new Tray('./app.ico');
+  try {
+    tray = new Tray(path.join(app.getAppPath(), 'app.ico'));
+  } catch {
+    app.quit();
+  }
+
   tray.setToolTip('Clipboard Manager');
 
   const contextMenu = Menu.buildFromTemplate([
